@@ -98,18 +98,33 @@ document.getElementById('cobroBtn').addEventListener('click', function() {
     alert(`Cobro total para patente "${patenteSeleccionada}": $${total} (${diffHoras} hora(s))`);
 });
 
-document.getElementById('verificarServidorBtn').addEventListener('click', function() {
+// Verificación automática del estado del servidor
+function verificarEstadoServidor() {
     fetch('http://127.0.0.1:5000/listar')
     .then(response => {
         if (response.ok) {
-            document.getElementById('estadoServidor').textContent = 'Estado: ONLINE';
+            document.getElementById('estadoServidor').textContent = 'Online';
+            document.getElementById('puntoEstado').className = 'online';
         } else {
-            document.getElementById('estadoServidor').textContent = 'Estado: OFFLINE';
+            document.getElementById('estadoServidor').textContent = 'Offline';
+            document.getElementById('puntoEstado').className = 'offline';
         }
     })
     .catch(() => {
-        document.getElementById('estadoServidor').textContent = 'Estado: OFFLINE';
+        document.getElementById('estadoServidor').textContent = 'Offline';
+        document.getElementById('puntoEstado').className = 'offline';
     });
+}
+
+// Iniciar verificación cada 3 segundos
+setInterval(verificarEstadoServidor, 3000);
+
+// Ejecutar verificación al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    listarPatentes();
+    actualizarTimer();
+    setInterval(actualizarTimer, 1000);
+    verificarEstadoServidor();
 });
 
 function listarPatentes() {
