@@ -25,3 +25,8 @@ Version 1.2
 2. Se agregó botón "Verificar servidor" que indica en tiempo real si el servidor se encuentra en funcionamiento o no.
 
 3. Se agregó timer.
+
+Version 1.3
+
+1. Se trabajó en el diseño
+2. Se agregaron estilos para mejorar la estructura responsive
