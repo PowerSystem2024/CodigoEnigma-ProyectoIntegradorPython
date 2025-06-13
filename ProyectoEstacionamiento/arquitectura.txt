@@ -7,6 +7,6 @@
 ├── templates/
 │   └── index.html
 │
-├── db.json   <-- se genera solo al correr app.py
+├── db.json   <-- generado automáticamente
 ├── app.py
 ├── requirements.txt

@@ -45,5 +45,22 @@ def eliminar_patente():
     else:
         return jsonify({'status': 'error', 'message': 'Patente no especificada'}), 400
 
+@app.route('/actualizar', methods=['POST'])
+def actualizar_patente():
+    data = request.json
+    patente_original = data.get('patenteOriginal')
+    patente_nueva = data.get('patenteNueva')
+
+    if patente_original and patente_nueva:
+        Patente = Query()
+        registros = tabla_patentes.search(Patente.patente == patente_original)
+        if registros:
+            tabla_patentes.update({'patente': patente_nueva}, Patente.patente == patente_original)
+            return jsonify({'status': 'ok'}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'Registro no encontrado'}), 404
+    else:
+        return jsonify({'status': 'error', 'message': 'Datos incompletos'}), 400
+
 if __name__ == '__main__':
     app.run(debug=True)

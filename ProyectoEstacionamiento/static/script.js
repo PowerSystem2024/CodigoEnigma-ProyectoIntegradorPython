@@ -1,3 +1,6 @@
+let patenteSeleccionada = null;
+let horaIngresoSeleccionada = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     listarPatentes();
     actualizarTimer();
@@ -34,6 +37,67 @@ document.getElementById('agregarBtn').addEventListener('click', function() {
     });
 });
 
+document.getElementById('actualizarBtn').addEventListener('click', function() {
+    const patenteNueva = document.getElementById('patenteInput').value.trim();
+
+    if (!patenteSeleccionada) {
+        alert('Seleccione un registro para actualizar.');
+        return;
+    }
+
+    fetch('http://127.0.0.1:5000/actualizar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            patenteOriginal: patenteSeleccionada,
+            patenteNueva: patenteNueva
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        listarPatentes();
+        resetSeleccion();
+    });
+});
+
+document.getElementById('eliminarBtn').addEventListener('click', function() {
+    if (!patenteSeleccionada) {
+        alert('Seleccione un registro para eliminar.');
+        return;
+    }
+
+    fetch('http://127.0.0.1:5000/eliminar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            patente: patenteSeleccionada
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        listarPatentes();
+        resetSeleccion();
+    });
+});
+
+document.getElementById('cobroBtn').addEventListener('click', function() {
+    if (!patenteSeleccionada || !horaIngresoSeleccionada) {
+        alert('Seleccione un registro para cobrar.');
+        return;
+    }
+
+    const precioPorHora = parseFloat(document.getElementById('precioHoraInput').value);
+    const ahora = new Date();
+    const horaIngreso = new Date(horaIngresoSeleccionada);
+
+    const diffMs = ahora - horaIngreso;
+    const diffHoras = Math.ceil(diffMs / (1000 * 60 * 60));
+
+    const total = diffHoras * precioPorHora;
+
+    alert(`Cobro total para patente "${patenteSeleccionada}": $${total} (${diffHoras} hora(s))`);
+});
+
 document.getElementById('verificarServidorBtn').addEventListener('click', function() {
     fetch('http://127.0.0.1:5000/listar')
     .then(response => {
@@ -61,7 +125,38 @@ function listarPatentes() {
                 <td>${registro.patente}</td>
                 <td>${new Date(registro.horaIngreso).toLocaleTimeString()}</td>
             `;
+
+            fila.addEventListener('click', function() {
+                // Quitar selección anterior
+                document.querySelectorAll('#tablaPatentes tbody tr').forEach(row => row.classList.remove('selected'));
+                fila.classList.add('selected');
+
+                // Guardar valores seleccionados
+                patenteSeleccionada = registro.patente;
+                horaIngresoSeleccionada = registro.horaIngreso;
+
+                // Rellenar input patente
+                document.getElementById('patenteInput').value = patenteSeleccionada;
+
+                // Habilitar botones
+                document.getElementById('actualizarBtn').disabled = false;
+                document.getElementById('eliminarBtn').disabled = false;
+                document.getElementById('cobroBtn').disabled = false;
+            });
+
             tablaBody.appendChild(fila);
         });
     });
+}
+
+function resetSeleccion() {
+    patenteSeleccionada = null;
+    horaIngresoSeleccionada = null;
+    document.getElementById('patenteInput').value = '';
+    document.getElementById('actualizarBtn').disabled = true;
+    document.getElementById('eliminarBtn').disabled = true;
+    document.getElementById('cobroBtn').disabled = true;
+
+    // Quitar selección visual
+    document.querySelectorAll('#tablaPatentes tbody tr').forEach(row => row.classList.remove('selected'));
 }

@@ -19,3 +19,9 @@ Version 1.1
 4. Se avanza con la siguiente versión
 
 Version 1.2
+
+1. Se aseguró la funcionalidad de los botones.
+
+2. Se agregó botón "Verificar servidor" que indica en tiempo real si el servidor se encuentra en funcionamiento o no.
+
+3. Se agregó timer.
