@@ -23,10 +23,10 @@ h1, h2 {
     width: 200px;
 }
 
-#agregarBtn, #actualizarBtn, #eliminarBtn, #cobroBtn {
+#agregarBtn, #actualizarBtn, #eliminarBtn, #cobroBtn, #verificarServidorBtn {
     padding: 8px 16px;
     font-size: 1em;
-    margin-left: 10px;
+    margin: 5px 10px 5px 0;
     cursor: pointer;
 }
 
@@ -65,4 +65,9 @@ th, td {
 
 tr.selected {
     background-color: #cce5ff;
+}
+
+#estadoServidor {
+    margin-top: 10px;
+    font-weight: bold;
 }
