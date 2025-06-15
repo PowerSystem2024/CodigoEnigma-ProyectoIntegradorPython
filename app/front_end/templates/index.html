@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estacionamiento - Registro de Patentes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+    <h1>Estacionamiento - Registro de Patentes</h1>
+
+    <div id="timer">Hora actual: --:--:--</div>
+
+    <div class="form-container">
+        <input type="text" id="patenteInput" placeholder="Ingrese Patente" maxlength="10" />
+        <button id="agregarBtn">Agregar</button>
+        <button id="actualizarBtn" disabled>Actualizar</button>
+        <button id="eliminarBtn" disabled>Eliminar</button>
+        <button id="cobroBtn" disabled>Cobro</button>
+    </div>
+
+    <div class="precio-container">
+        Precio por hora: <input type="number" id="precioHoraInput" value="1500" min="0" step="100" /> <span>$</span>
+    </div>
+
+    <h2>Autos Ingresados</h2>
+    <table id="tablaPatentes">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Patente</th>
+                <th>Hora de Ingreso</th>
+                <th>Precio por hora</th>
+                <th>Hora de Actualización</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Las filas se agregarán dinámicamente -->
+        </tbody>
+    </table>
+
+    <!-- Estado del servidor (nuevo diseño, permanente) -->
+    <div id="estadoServidorContainer">
+        <span id="estadoServidorTexto">Estado del servidor: </span>
+        <span id="estadoServidor">Offline</span>
+        <span id="puntoEstado" class="offline"></span>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
