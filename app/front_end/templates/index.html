@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Estacionamiento - Registro de Patentes</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
+
 <body>
     <h1>Estacionamiento - Registro de Patentes</h1>
 
@@ -30,6 +32,8 @@
                 <th>#</th>
                 <th>Patente</th>
                 <th>Hora de Ingreso</th>
+                <th>Precio por hora</th>
+                <th>Hora de Actualización</th>
             </tr>
         </thead>
         <tbody>
@@ -37,6 +41,14 @@
         </tbody>
     </table>
 
-    <script src="script.js"></script>
+    <!-- Estado del servidor (nuevo diseño, permanente) -->
+    <div id="estadoServidorContainer">
+        <span id="estadoServidorTexto">Estado del servidor: </span>
+        <span id="estadoServidor">Offline</span>
+        <span id="puntoEstado" class="offline"></span>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>
