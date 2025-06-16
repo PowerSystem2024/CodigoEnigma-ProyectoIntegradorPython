@@ -18,10 +18,10 @@ def create_app():
 
     init_db()
 
-    # Enable CORS for all routes and origins
+    # Habilitar CORS para todas las rutas y orígenes
     CORS(app)
 
-    # Disable masks for optional fields in Swagger
+    # Deshabilitar máscaras para campos opcionales en Swagger
     app.config["RESTX_MASK_SWAGGER"] = False
 
     api = Api(
@@ -33,10 +33,10 @@ def create_app():
         openapi="3.0.0",
     )
 
-    # Register namespaces after defining the routes
+    # Registrar los espacios de nombres después de definir las rutas
     create_routers(api)
 
-    # Configure Swagger UI
+    # Configura Swagger UI
     SWAGGER_URL = "/docs"
     API_URL = "/swagger.json"
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
