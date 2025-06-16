@@ -12,15 +12,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class DatabaseTableBuilder:
     """
-    A class that facilitates the creation of tables in a database using SQLAlchemy.
+    Una clase que facilita la creación de tablas en una base de datos utilizando SQLAlchemy.
 
-    Attributes:
-        - Base: An SQLAlchemy base object used to define the structure of tables.
-        - engine: A database engine connection object used for executing operations on the database.
+    Atributos:
+        - Base: Un objeto base de SQLAlchemy utilizado para definir la estructura de las tablas.
+        - engine: Un objeto de conexión de motor de base de datos utilizado para ejecutar operaciones en la base de datos.
 
-    Methods:
-        - create_table: A method that uses the Base object to create all tables defined in SQLAlchemy in the database
-        associated with the engine.
+    Métodos:
+        - create_table: Un método que utiliza el objeto Base para crear todas las tablas definidas en SQLAlchemy en la base de datos asociada con el motor.
     """
 
     _instance = None
@@ -55,7 +54,7 @@ class DatabaseTableBuilder:
 
 def init_db() -> None:
     """
-    Initializes the database by creating all tables defined in the models.
+    Inicializa la base de datos creando todas las tablas definidas en los modelos.
     """
     from app.modules.patentes.models import patente_model  # importa todos los modelos aquí
 
