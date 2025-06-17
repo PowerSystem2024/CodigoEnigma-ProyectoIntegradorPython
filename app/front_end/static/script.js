@@ -1,5 +1,8 @@
 let patenteSeleccionada = null;
 let horaIngresoSeleccionada = null;
+//Lista de patentes cobradas
+let patentesCobradas = [];
+
 
 document.addEventListener('DOMContentLoaded', function() {
     listarPatentes();
@@ -143,7 +146,7 @@ document.getElementById('cobroBtn').addEventListener('click', function() {
     const diffHoras = Math.ceil(diffMs / (1000 * 60 * 60));
     const total = diffHoras * precioPorHora;
 
-    if (confirm(`Cobro total para patente "${patenteSeleccionada}": $${total} (${diffHoras} hora(s))\n\n¿Marcar como cobrado?`)) {
+    if (confirm(`Cobro total para patente "${patenteSeleccionada}": $${total} (${diffHoras} hs)\n\n¿Marcar como cobrado?`)) {
         fetch('http://127.0.0.1:5000/patentes/cobrar', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -151,21 +154,51 @@ document.getElementById('cobroBtn').addEventListener('click', function() {
         })
         .then(response => response.json())
         .then(data => {
+            patentesCobradas.push({ // guardar la patente cobrada
+                patente: patenteSeleccionada,
+                total: total
+            });
             listarPatentes();
+            mostrarPatentesCobradas(); // mostrar en la nueva sección
+            
             resetSeleccion();
         });
     }
 });
+
+// Mostrar patentes cobradas en tabla
+function mostrarPatentesCobradas() {
+    const tbody = document.querySelector("#tablaCobradas tbody");
+    tbody.innerHTML = "";
+
+    patentesCobradas.forEach(entry => {
+        const row = document.createElement("tr");
+
+        const tdPatente = document.createElement("td");
+        tdPatente.textContent = entry.patente;
+
+        const tdTotal = document.createElement("td");
+        tdTotal.textContent = `$${entry.total}`;
+
+        row.appendChild(tdPatente);
+        row.appendChild(tdTotal);
+
+        tbody.appendChild(row);
+    });
+}
+
+
+
 
 // Verificación automática del estado del servidor
 function verificarEstadoServidor() {
     fetch('http://127.0.0.1:5000/patentes/activas')
     .then(response => {
         if (response.ok) {
-            document.getElementById('estadoServidor').textContent = 'Online';
+            document.getElementById('estadoServidor').textContent = ' Online';
             document.getElementById('puntoEstado').className = 'online';
         } else {
-            document.getElementById('estadoServidor').textContent = 'Offline';
+            document.getElementById('estadoServidor').textContent = ' Offline';
             document.getElementById('puntoEstado').className = 'offline';
         }
     })
