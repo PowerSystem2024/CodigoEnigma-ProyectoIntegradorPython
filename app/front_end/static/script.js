@@ -27,30 +27,59 @@ function getArgentinaISOString() {
 }
 
 document.getElementById('agregarBtn').addEventListener('click', function() {
-    const patente = document.getElementById('patenteInput').value.trim();
+    const patenteInput = document.getElementById('patenteInput');
+    const precioInput  = document.getElementById('precioHoraInput');
+    const errorDiv     = document.getElementById('errorPatente');
+    const patente      = patenteInput.value.trim();
     const ahoraArgentina = getArgentinaISOString();
 
+    // Limpiar mensaje de error previo
+    errorDiv.style.display = 'none';
+    errorDiv.textContent   = '';
+
+    // Validación básica de patente vacía
     if (patente === '') {
-        alert('Por favor ingrese una patente válida.');
+        errorDiv.textContent = 'Por favor ingrese una patente válida.';
+        errorDiv.style.display = 'block';
         return;
     }
 
+    // Construir payload
+    const payload = {
+        patente: patente,
+        hora_ingreso: ahoraArgentina,
+        precio_hora: parseFloat(precioInput.value),
+        hora_actualizacion: ahoraArgentina
+    };
+
     fetch('http://127.0.0.1:5000/patentes/agregar', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            patente: patente,
-            hora_ingreso: ahoraArgentina,
-            precio_hora: parseFloat(document.getElementById('precioHoraInput').value),
-            hora_actualizacion: ahoraArgentina
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            // Si el backend responde con error, lo parseamos y mostramos
+            return response.json().then(err => {
+                errorDiv.textContent = err.message || 'Error al agregar la patente.';
+                errorDiv.style.display = 'block';
+                throw new Error(err.message);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
+        // Éxito: ocultar error, refrescar lista y limpiar campos
+        errorDiv.style.display = 'none';
+        patenteInput.value = '';
+        precioInput.value  = '';
         listarPatentes();
-        document.getElementById('patenteInput').value = '';
+    })
+    .catch(err => {
+        console.error('Fetch error:', err);
     });
 });
+
 
 document.getElementById('actualizarBtn').addEventListener('click', function() {
     const patenteNueva = document.getElementById('patenteInput').value.trim();
