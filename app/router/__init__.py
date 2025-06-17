@@ -6,17 +6,13 @@ from flask_restx import Api
 
 def create_routers(api: Api) -> None:
     """
-    Registers namespaces in the provided API instance.
+    Registra los espacios de nombres en la instancia de API proporcionada.
 
     Args:
-        api (Api): The Flask-RESTx API instance where namespaces will be registered.
+        api (Api): La instancia de API de Flask-RESTx donde se registrarán los espacios de nombres.
     """
-    # Step 1: Import all controllers to ensure they are loaded before registration for the Flask-RESTx API
+    # Paso 1: Importar todos los controladores para asegurarse de que estén cargados antes del registro en la API de Flask-RESTx
     import_controllers()
 
-    # Step 2: Register all namespaces to associate them with the API
+    # Paso 2: Registrar todos los espacios de nombres para asociarlos con la API
     register_namespace(api)
-
-    # @app.route("/")
-    # def index():
-    #     return render_template("index.html")

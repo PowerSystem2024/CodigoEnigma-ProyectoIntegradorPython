@@ -1,5 +1,8 @@
 let patenteSeleccionada = null;
 let horaIngresoSeleccionada = null;
+//Lista de patentes cobradas
+let patentesCobradas = [];
+
 
 document.addEventListener('DOMContentLoaded', function() {
     listarPatentes();
@@ -27,30 +30,59 @@ function getArgentinaISOString() {
 }
 
 document.getElementById('agregarBtn').addEventListener('click', function() {
-    const patente = document.getElementById('patenteInput').value.trim();
+    const patenteInput = document.getElementById('patenteInput');
+    const precioInput  = document.getElementById('precioHoraInput');
+    const errorDiv     = document.getElementById('errorPatente');
+    const patente      = patenteInput.value.trim();
     const ahoraArgentina = getArgentinaISOString();
 
+    // Limpiar mensaje de error previo
+    errorDiv.style.display = 'none';
+    errorDiv.textContent   = '';
+
+    // Validación básica de patente vacía
     if (patente === '') {
-        alert('Por favor ingrese una patente válida.');
+        errorDiv.textContent = 'Por favor ingrese una patente válida.';
+        errorDiv.style.display = 'block';
         return;
     }
 
+    // Construir payload
+    const payload = {
+        patente: patente,
+        hora_ingreso: ahoraArgentina,
+        precio_hora: parseFloat(precioInput.value),
+        hora_actualizacion: ahoraArgentina
+    };
+
     fetch('http://127.0.0.1:5000/patentes/agregar', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            patente: patente,
-            hora_ingreso: ahoraArgentina,
-            precio_hora: parseFloat(document.getElementById('precioHoraInput').value),
-            hora_actualizacion: ahoraArgentina
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            // Si el backend responde con error, lo parseamos y mostramos
+            return response.json().then(err => {
+                errorDiv.textContent = err.message || 'Error al agregar la patente.';
+                errorDiv.style.display = 'block';
+                throw new Error(err.message);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
+        // Éxito: ocultar error, refrescar lista y limpiar campos
+        errorDiv.style.display = 'none';
+        patenteInput.value = '';
+        precioInput.value  = '';
         listarPatentes();
-        document.getElementById('patenteInput').value = '';
+    })
+    .catch(err => {
+        console.error('Fetch error:', err);
     });
 });
+
 
 document.getElementById('actualizarBtn').addEventListener('click', function() {
     const patenteNueva = document.getElementById('patenteInput').value.trim();
@@ -114,7 +146,7 @@ document.getElementById('cobroBtn').addEventListener('click', function() {
     const diffHoras = Math.ceil(diffMs / (1000 * 60 * 60));
     const total = diffHoras * precioPorHora;
 
-    if (confirm(`Cobro total para patente "${patenteSeleccionada}": $${total} (${diffHoras} hora(s))\n\n¿Marcar como cobrado?`)) {
+    if (confirm(`Cobro total para patente "${patenteSeleccionada}": $${total} (${diffHoras} hs)\n\n¿Marcar como cobrado?`)) {
         fetch('http://127.0.0.1:5000/patentes/cobrar', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -122,21 +154,51 @@ document.getElementById('cobroBtn').addEventListener('click', function() {
         })
         .then(response => response.json())
         .then(data => {
+            patentesCobradas.push({ // guardar la patente cobrada
+                patente: patenteSeleccionada,
+                total: total
+            });
             listarPatentes();
+            mostrarPatentesCobradas(); // mostrar en la nueva sección
+            
             resetSeleccion();
         });
     }
 });
+
+// Mostrar patentes cobradas en tabla
+function mostrarPatentesCobradas() {
+    const tbody = document.querySelector("#tablaCobradas tbody");
+    tbody.innerHTML = "";
+
+    patentesCobradas.forEach(entry => {
+        const row = document.createElement("tr");
+
+        const tdPatente = document.createElement("td");
+        tdPatente.textContent = entry.patente;
+
+        const tdTotal = document.createElement("td");
+        tdTotal.textContent = `$${entry.total}`;
+
+        row.appendChild(tdPatente);
+        row.appendChild(tdTotal);
+
+        tbody.appendChild(row);
+    });
+}
+
+
+
 
 // Verificación automática del estado del servidor
 function verificarEstadoServidor() {
     fetch('http://127.0.0.1:5000/patentes/activas')
     .then(response => {
         if (response.ok) {
-            document.getElementById('estadoServidor').textContent = 'Online';
+            document.getElementById('estadoServidor').textContent = ' Online';
             document.getElementById('puntoEstado').className = 'online';
         } else {
-            document.getElementById('estadoServidor').textContent = 'Offline';
+            document.getElementById('estadoServidor').textContent = ' Offline';
             document.getElementById('puntoEstado').className = 'offline';
         }
     })
