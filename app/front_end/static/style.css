@@ -114,6 +114,10 @@ th, td {
 tr.selected {
     background-color: #cce5ff;
 }
+.error-message {
+  font-weight: bold;
+  color: #b00020;
+}
 
 @media (max-width: 600px) {
     .form-container {
